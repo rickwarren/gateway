@@ -21,7 +21,7 @@ export class ProfileService {
    * @param {number} id - The ID of the profile to retrieve.
    * @return {Promise<any>} A promise that resolves to the profile information.
    */
-  async getProfileService(id: number): Promise<ProfileDto> {
+  async getProfileService(id: string): Promise<ProfileDto> {
     return this.mapToProfileDto(
       await getProfile({ id: id }, { baseURL: 'http://localhost:8080' }),
     );
@@ -75,7 +75,7 @@ export class ProfileService {
    * @param {number} id - The ID of the profile to be deleted.
    * @return {Promise<any>} A promise that resolves with the result of the delete operation.
    */
-  async deleteProfileService(id: number): Promise<DeleteProfileResponseDto> {
+  async deleteProfileService(id: string): Promise<DeleteProfileResponseDto> {
     return await deleteProfile(
       { id: id },
       { baseURL: 'http://localhost:8080' },
@@ -84,21 +84,22 @@ export class ProfileService {
 
   mapToProfileDto(data: any): ProfileDto {
     const profileDto = new ProfileDto();
-    profileDto.id = data.id ? data.id : null;
-    profileDto.firstName = data.firstName;
-    profileDto.lastName = data.lastName;
-    profileDto.dateOfBirth = data.dateOfBirth;
-    profileDto.profession = data.profession;
-    profileDto.employer = data.employer;
-    profileDto.dateHired = data.dateHired;
-    profileDto.employmentStatus = data.employmentStatus;
-    profileDto.relationshipStatus = data.relationshipStatus;
-    profileDto.hometown = data.hometown;
-    profileDto.city = data.city;
-    profileDto.province = data.province;
-    profileDto.country = data.country;
-    profileDto.language = data.language;
-    profileDto.mobilePhone = data.mobilePhone;
+    profileDto.id = data?.id ? data?.id : null;
+    profileDto.ownerId = data?.ownerId;
+    profileDto.firstName = data?.firstName;
+    profileDto.lastName = data?.lastName;
+    profileDto.dateOfBirth = data?.dateOfBirth;
+    profileDto.profession = data?.profession;
+    profileDto.employer = data?.employer;
+    profileDto.dateHired = data?.dateHired;
+    profileDto.employmentStatus = data?.employmentStatus;
+    profileDto.relationshipStatus = data?.relationshipStatus;
+    profileDto.hometown = data?.hometown;
+    profileDto.city = data?.city;
+    profileDto.province = data?.province;
+    profileDto.country = data?.country;
+    profileDto.language = data?.language;
+    profileDto.mobilePhone = data?.mobilePhone;
     return profileDto;
   }
 }

@@ -2,8 +2,8 @@ import * as protoscript from 'protoscript';
 import { CommentDto } from '../../comment/dto/comment.dto';
 
 export class PostDto {
-  id: number;
-  authorId: number;
+  id: string;
+  authorId: string;
   message: string;
   attachment: string;
   comments: CommentDto[];

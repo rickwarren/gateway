@@ -1,6 +1,6 @@
 export class FriendListDto {
-  id: number;
-  requesterId: number;
-  addresseId: number;
+  id: string;
+  requesterId: string;
+  addresseId: string;
   friendType: string;
 }

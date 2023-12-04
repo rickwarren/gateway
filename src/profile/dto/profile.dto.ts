@@ -1,8 +1,8 @@
 import * as protoscript from 'protoscript';
 
 export class ProfileDto {
-  id: number;
-  ownerId: number;
+  id: string;
+  ownerId: string;
   firstName: string;
   lastName: string;
   dateOfBirth: string;

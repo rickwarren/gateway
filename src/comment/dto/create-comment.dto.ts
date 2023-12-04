@@ -1,6 +1,6 @@
 export class CreateCommentDto {
-  authorId: number;
+  authorId: string;
   message: string;
   attachment: string;
-  postId: number;
+  postId: string;
 }

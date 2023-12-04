@@ -38,7 +38,7 @@ export class FriendRequestController {
    */
   @Get(':userId')
   getFriendRequestsByUserId(
-    @Param('userId') userId: number,
+    @Param('userId') userId: string,
   ): Promise<FriendRequestDto[]> {
     return this.friendRequestService.getFriendRequestsByUserIdService(userId);
   }
@@ -76,7 +76,7 @@ export class FriendRequestController {
    * @return {Promise<boolean>} - A promise that resolves to a boolean indicating whether the friend request was successfully deleted.
    * */
   @Delete(':id')
-  deleteFriendRequest(@Param('id') id: number): Promise<boolean> {
+  deleteFriendRequest(@Param('id') id: string): Promise<boolean> {
     return this.friendRequestService.deleteFriendRequestService(id);
   }
 
@@ -87,7 +87,7 @@ export class FriendRequestController {
    * @return {Promise<boolean>} A promise that resolves to true if the friend request was accepted successfully, or false otherwise.
    * */
   @Post(':id/accept')
-  acceptFriendRequest(@Param('id') id: number): Promise<boolean> {
+  acceptFriendRequest(@Param('id') id: string): Promise<boolean> {
     return this.friendRequestService.acceptFriendRequestService(id);
   }
 
@@ -98,7 +98,7 @@ export class FriendRequestController {
    * @return {Promise<boolean>} A promise that resolves to true if the friend request was successfully rejected, or false otherwise.
    * */
   @Post(':id/reject')
-  rejectFriendRequest(@Param('id') id: number): Promise<boolean> {
+  rejectFriendRequest(@Param('id') id: string): Promise<boolean> {
     return this.friendRequestService.rejectFriendRequestService(id);
   }
 
@@ -111,8 +111,8 @@ export class FriendRequestController {
    */
   @Get('relation')
   getFriendRequest(
-    @Param() requesterId: number,
-    @Param() addresseId: number,
+    @Param() requesterId: string,
+    @Param() addresseId: string,
   ): Promise<FriendRequestDto> {
     return this.friendRequestService.getFriendRequestService(
       requesterId,

@@ -35,7 +35,7 @@ export class ProfileController {
    * @return {any} The profile of the user.
    */
   @Get()
-  getProfile(@Param() userId: number): Promise<ProfileDto> {
+  getProfile(@Param() userId: string): Promise<ProfileDto> {
     return this.profileService.getProfileService(userId);
   }
 
@@ -79,7 +79,7 @@ export class ProfileController {
    * @return {Promise<boolean>} A promise that resolves to true if the profile is successfully deleted, or false otherwise.
    */
   @Delete(':id')
-  deleteProfile(@Param('id') id: number): Promise<DeleteProfileResponseDto> {
+  deleteProfile(@Param('id') id: string): Promise<DeleteProfileResponseDto> {
     return this.profileService.deleteProfileService(id);
   }
 }
