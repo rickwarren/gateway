@@ -1,5 +1,5 @@
 export class CreateFriendListDto {
-  requesterId: number;
-  addresseId: number;
+  requesterId: string;
+  addresseId: string;
   friendType: string;
 }

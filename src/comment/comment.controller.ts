@@ -29,11 +29,11 @@ export class CommentController {
   /**
    * Retrieves a comment by its ID.
    *
-   * @param {number} id - The ID of the comment to retrieve.
+   * @param {string} id - The ID of the comment to retrieve.
    * @return {Comment} The retrieved comment.
    */
   @Get(':id')
-  getComment(@Param('id') id: number): Promise<CommentDto> {
+  getComment(@Param('id') id: string): Promise<CommentDto> {
     return this.commentService.getCommentService(id);
   }
 
@@ -62,11 +62,11 @@ export class CommentController {
   /**
    * Deletes a comment with the given ID.
    *
-   * @param {number} id - The ID of the comment to delete.
+   * @param {string} id - The ID of the comment to delete.
    * @return {any} - The result of the delete operation.
    */
   @Delete(':id')
-  deleteComment(@Param('id') id: number): Promise<boolean> {
+  deleteComment(@Param('id') id: string): Promise<boolean> {
     return this.commentService.deleteCommentService(id);
   }
 }

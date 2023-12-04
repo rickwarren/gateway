@@ -1,5 +1,5 @@
 export class CreatePostDto {
-  authorId: number;
+  authorId: string;
   message: string;
   attachment: string;
 }

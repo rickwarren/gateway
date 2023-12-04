@@ -34,7 +34,7 @@ export class PostController {
    * @return {any} The retrieved post.
    */
   @Get(':id')
-  getPost(@Param() id: number): Promise<PostDto> {
+  getPost(@Param() id: string): Promise<PostDto> {
     return this.postService.getPostService(id);
   }
 
@@ -67,7 +67,7 @@ export class PostController {
    * @return {void} - Returns nothing.
    */
   @Delete()
-  deletePost(@Param() id: number): Promise<boolean> {
+  deletePost(@Param() id: string): Promise<boolean> {
     return this.postService.deletePostService(id);
   }
 }

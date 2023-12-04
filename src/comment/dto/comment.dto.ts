@@ -1,11 +1,11 @@
 import * as protoscript from 'protoscript';
 
 export class CommentDto {
-  id: number;
-  authorId: number;
+  id: string;
+  authorId: string;
   message: string;
   attachment: string;
-  postId: number;
+  postId: string;
   createdAt: protoscript.Timestamp;
   updatedAt: protoscript.Timestamp;
 }

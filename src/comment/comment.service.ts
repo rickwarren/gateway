@@ -34,10 +34,10 @@ export class CommentService {
   /**
    * Retrieves a comment by its ID.
    *
-   * @param {number} id - The ID of the comment.
+   * @param {string} id - The ID of the comment.
    * @return {Promise<any>} A Promise that resolves to the comment.
    */
-  async getCommentService(id: number): Promise<CommentDto> {
+  async getCommentService(id: string): Promise<CommentDto> {
     return this.mapToCommentDto(
       await getComment({ id: id }, { baseURL: 'http://localhost:8081' }),
     );
@@ -70,10 +70,10 @@ export class CommentService {
   /**
    * Deletes a comment.
    *
-   * @param {number} id - The ID of the comment to be deleted.
+   * @param {string} id - The ID of the comment to be deleted.
    * @return {any} A promise that resolves with the result of the delete operation.
    */
-  async deleteCommentService(id: number): Promise<boolean> {
+  async deleteCommentService(id: string): Promise<boolean> {
     const success = await deleteComment(
       { id: id },
       { baseURL: 'http://localhost:8081' },
@@ -83,11 +83,11 @@ export class CommentService {
 
   mapToCommentDto(comment: any): CommentDto {
     const commentDto = new CommentDto();
-    commentDto.id = comment.id ? comment.id : null;
-    commentDto.authorId = comment.authorId;
-    commentDto.message = comment.message;
-    commentDto.attachment = comment.attachment;
-    commentDto.postId = comment.postId;
+    commentDto.id = comment?.id ? comment?.id : null;
+    commentDto.authorId = comment?.authorId;
+    commentDto.message = comment?.message;
+    commentDto.attachment = comment?.attachment;
+    commentDto.postId = comment?.postId;
     return commentDto;
   }
 }

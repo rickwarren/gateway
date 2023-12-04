@@ -16,10 +16,10 @@ export class FriendListService {
   /**
    * Retrieves a list of friends for a given user ID.
    *
-   * @param {number} userId - The ID of the user.
+   * @param {string} userId - The ID of the user.
    * @return {Promise<FriendListDto[]>} A Promise that resolves to a list of FriendListDto objects.
    */
-  async getFriendsByUserIdService(userId: number): Promise<FriendListDto[]> {
+  async getFriendsByUserIdService(userId: string): Promise<FriendListDto[]> {
     const friends = await getFriendsByUserId(
       { id: userId },
       { baseURL: 'http://localhost:8082' },
@@ -34,11 +34,11 @@ export class FriendListService {
   /**
    * Checks if two users are friends.
    *
-   * @param {number} id - The ID of the first user.
-   * @param {number} userId - The ID of the second user.
+   * @param {string} id - The ID of the first user.
+   * @param {string} userId - The ID of the second user.
    * @return {Promise<boolean>} A promise that resolves to a boolean indicating whether the two users are friends.
    * */
-  async areUsersFriendsService(id: number, userId: number): Promise<boolean> {
+  async areUsersFriendsService(id: string, userId: string): Promise<boolean> {
     const result = await areUsersFriends(
       { id: id, userId: userId },
       { baseURL: 'http://localhost:8082' },
@@ -61,10 +61,10 @@ export class FriendListService {
   /**
    * Removes a friend from the friend list.
    *
-   * @param {number} id - The ID of the friend to be removed.
+   * @param {string} id - The ID of the friend to be removed.
    * @return {Promise<boolean>} A promise that resolves to true if the friend is successfully removed, false otherwise.
    * */
-  async removeFriendService(id: number): Promise<boolean> {
+  async removeFriendService(id: string): Promise<boolean> {
     const result = await removeFriend(
       { id: id },
       { baseURL: 'http://localhost:8082' },
@@ -74,10 +74,10 @@ export class FriendListService {
 
   mapFriendListToDto(friendList: FriendList): FriendListDto {
     const friendListDto = new FriendListDto();
-    friendListDto.id = friendList.id ? friendList.id : null;
-    friendListDto.requesterId = friendList.requesterId;
-    friendListDto.addresseId = friendList.addresseId;
-    friendListDto.friendType = friendList.friendType;
+    friendListDto.id = friendList?.id ? friendList?.id : null;
+    friendListDto.requesterId = friendList?.requesterId;
+    friendListDto.addresseId = friendList?.addresseId;
+    friendListDto.friendType = friendList?.friendType;
     return friendListDto;
   }
 }

@@ -16,6 +16,7 @@ import { UserLoginDto } from './dto/user-login.dto';
 import { TokenResponseDto } from './dto/token-response.dto';
 import { JwtService } from '@nestjs/jwt';
 import { UserDto } from './dto/user.dto';
+import * as jwt from 'jsonwebtoken';
 
 @Injectable()
 export class UserService {
@@ -50,10 +51,13 @@ export class UserService {
     const payload = {
       sub: user.id,
       email: user.email,
-      user: user.id,
+      id: user.id,
       role: user.role,
     };
-    const token = await this.jwtService.signAsync(payload);
+    const token = await jwt.sign(payload, 'secretkey', {
+      algorithm: 'HS256',
+      expiresIn: '1day', 
+    });
 
     return { token: token };
   }
@@ -109,7 +113,7 @@ export class UserService {
    * @param {number} userId - The ID of the user to delete.
    * @return {Promise<boolean>} A boolean indicating if the user was successfully deleted.
    */
-  async deleteUserService(userId: number): Promise<DeleteUserResponseDto> {
+  async deleteUserService(userId: string): Promise<DeleteUserResponseDto> {
     return await deleteUser(
       { id: userId },
       { baseURL: 'http://localhost:8080' },
@@ -131,9 +135,9 @@ export class UserService {
 
   mapToUserDto(user: any): UserDto {
     const userDto = new UserDto();
-    userDto.id = user.id ? user.id : null;
-    userDto.email = user.email;
-    userDto.role = user.role;
+    userDto.id = user?.id ? user?.id : null;
+    userDto.email = user?.email;
+    userDto.role = user?.role;
     return userDto;
   }
 }

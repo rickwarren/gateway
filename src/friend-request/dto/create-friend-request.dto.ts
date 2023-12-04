@@ -1,5 +1,5 @@
 export class CreateFriendRequestDto {
-  requesterId: number;
-  addresseId: number;
+  requesterId: string;
+  addresseId: string;
   status: string;
 }

@@ -2,13 +2,13 @@ import { IsNotEmpty } from 'class-validator';
 import * as protoscript from 'protoscript';
 
 export class FriendRequestDto {
-  id?: number;
+  id?: string;
 
   @IsNotEmpty()
-  requesterId: number;
+  requesterId: string;
 
   @IsNotEmpty()
-  addresseId: number;
+  addresseId: string;
 
   status: string;
 

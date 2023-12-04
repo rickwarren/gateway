@@ -36,7 +36,7 @@ export class UserController {
    * @return {Promise<UserDto>} A promise that resolves to the user data.
    */
   @Get(':id')
-  getUser(@Param('id') id: number): Promise<UserDto> {
+  getUser(@Param('id') id: string): Promise<UserDto> {
     return this.userService.getUserService({ id: id });
   }
 
@@ -58,7 +58,7 @@ export class UserController {
    * @return {Promise<boolean>} A boolean indicating whether the user was successfully deleted.
    */
   @Delete(':id')
-  deleteUser(@Param('id') id: number): Promise<DeleteUserResponseDto> {
+  deleteUser(@Param('id') id: string): Promise<DeleteUserResponseDto> {
     return this.userService.deleteUserService(id);
   }
 

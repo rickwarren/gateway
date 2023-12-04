@@ -4,7 +4,7 @@ import * as protoscript from 'protoscript';
 
 export class UpdateUserDto {
   @IsNotEmpty()
-  id: number;
+  id: string;
 
   @IsNotEmpty()
   @IsEmail()

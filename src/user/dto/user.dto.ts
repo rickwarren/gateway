@@ -4,7 +4,7 @@ import { ProfileDto } from '../../profile/dto/profile.dto';
 
 export class UserDto {
   @IsNotEmpty()
-  id: number;
+  id: string;
 
   @IsNotEmpty()
   @IsEmail()

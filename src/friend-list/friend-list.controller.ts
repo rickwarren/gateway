@@ -21,12 +21,12 @@ export class FriendListController {
   /**
    * Retrieves a list of friends for a given user ID.
    *
-   * @param {number} userId - The ID of the user.
+   * @param {string} userId - The ID of the user.
    * @return {Promise<FriendListDto[]>} A Promise that resolves to a list of FriendListDto objects.
    */
   @Get(':userId')
   getFriendsByUserId(
-    @Param('userId') userId: number,
+    @Param('userId') userId: string,
   ): Promise<FriendListDto[]> {
     return this.friendListService.getFriendsByUserIdService(userId);
   }
@@ -34,14 +34,14 @@ export class FriendListController {
   /**
    * Checks if two users are friends.
    *
-   * @param {number} id - The ID of the first user.
-   * @param {number} userId - The ID of the second user.
+   * @param {string} id - The ID of the first user.
+   * @param {string} userId - The ID of the second user.
    * @return {Promise<boolean>} A promise that resolves to a boolean indicating whether the two users are friends.
    * */
   @Get(':id/:userId')
   areUsersFriends(
-    @Param('id') id: number,
-    @Param('userId') userId: number,
+    @Param('id') id: string,
+    @Param('userId') userId: string,
   ): Promise<boolean> {
     return this.friendListService.areUsersFriendsService(id, userId);
   }
@@ -60,11 +60,11 @@ export class FriendListController {
   /**
    * Removes a friend from the friend list.
    *
-   * @param {number} id - The ID of the friend to be removed.
+   * @param {string} id - The ID of the friend to be removed.
    * @return {Promise<boolean>} A promise that resolves to true if the friend is successfully removed, false otherwise.
    * */
   @Get('remove/:id')
-  removeFriend(@Param('id') id: number): Promise<boolean> {
+  removeFriend(@Param('id') id: string): Promise<boolean> {
     return this.friendListService.removeFriendService(id);
   }
 }

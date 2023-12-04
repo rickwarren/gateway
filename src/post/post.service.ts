@@ -20,7 +20,7 @@ export class PostService {
    * @param {number} userId - The ID of the user for retrieving posts.
    * @return {Promise<PostDto[]>} A Promise that resolves to an array of PostDto objects representing the retrieved posts.
    */
-  async getPostsService(userId: number): Promise<PostDto[]> {
+  async getPostsService(userId: string): Promise<PostDto[]> {
     const posts = await getPosts(userId, { baseURL: 'http://localhost:8081' });
     let postsDto: PostDto[];
     posts.posts.forEach((post) => {
@@ -35,7 +35,7 @@ export class PostService {
    * @param {number} id - The ID of the post to retrieve.
    * @return {Promise<PostDto>} A Promise that resolves to a PostDto object representing the retrieved post.
    */
-  async getPostService(id: number): Promise<PostDto> {
+  async getPostService(id: string): Promise<PostDto> {
     return this.mapToPostDto(
       await getPost({ id: id }, { baseURL: 'http://localhost:8081' }),
     );
@@ -71,7 +71,7 @@ export class PostService {
    * @param {number} id - The ID of the post to be deleted.
    * @return {Promise<boolean>} A Promise that resolves to a boolean value indicating whether the post was successfully deleted.
    */
-  async deletePostService(id: number): Promise<boolean> {
+  async deletePostService(id: string): Promise<boolean> {
     const success = await deletePost(
       { id: id },
       { baseURL: 'http://localhost:8081' },
@@ -87,10 +87,10 @@ export class PostService {
    */
   mapToPostDto(post: any): PostDto {
     const postDto = new PostDto();
-    postDto.id = post.id ? post.id : null;
-    postDto.authorId = post.authorId;
-    postDto.message = post.message;
-    postDto.attachment = post.attachment;
+    postDto.id = post?.id ? post?.id : null;
+    postDto.authorId = post?.authorId;
+    postDto.message = post?.message;
+    postDto.attachment = post?.attachment;
     return postDto;
   }
 }

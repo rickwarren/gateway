@@ -24,7 +24,7 @@ export class FriendRequestService {
    * @return {Promise<FriendRequestDto[]>} The list of friend requests.
    */
   async getFriendRequestsByUserIdService(
-    userId: number,
+    userId: string,
   ): Promise<FriendRequestDto[]> {
     const result = await getFriendRequestsByUserId(
       { id: userId },
@@ -43,7 +43,7 @@ export class FriendRequestService {
    * @param {number} id - The ID of the friend request to accept.
    * @return {Promise<boolean>} A promise that resolves to true if the friend request was accepted successfully, or false otherwise.
    * */
-  async acceptFriendRequestService(id: number): Promise<boolean> {
+  async acceptFriendRequestService(id: string): Promise<boolean> {
     const result = await acceptFriendRequest(
       { id: id },
       { baseURL: 'http://localhost:8082' },
@@ -57,7 +57,7 @@ export class FriendRequestService {
    * @param {number} id - The ID of the friend request to reject.
    * @return {Promise<boolean>} A promise that resolves to true if the friend request was rejected successfully, or false otherwise.
    * */
-  async rejectFriendRequestService(id: number): Promise<boolean> {
+  async rejectFriendRequestService(id: string): Promise<boolean> {
     const result = await rejectFriendRequest(
       { id: id },
       { baseURL: 'http://localhost:8082' },
@@ -102,7 +102,7 @@ export class FriendRequestService {
    * @param {number} id - The ID of the friend request to be deleted.
    * @return {Promise<boolean>} A promise that resolves to a boolean indicating whether the friend request was successfully deleted.
    * */
-  async deleteFriendRequestService(id: number): Promise<boolean> {
+  async deleteFriendRequestService(id: string): Promise<boolean> {
     const result = await deleteFriendRequest(
       { id: id },
       { baseURL: 'http://localhost:8082' },
@@ -118,8 +118,8 @@ export class FriendRequestService {
    * @return {Promise<FriendRequestDto>} - A promise that resolves to the friend request DTO.
    */
   async getFriendRequestService(
-    requesterId: number,
-    addresseId: number,
+    requesterId: string,
+    addresseId: string,
   ): Promise<FriendRequestDto> {
     return this.maptoFriendRequestDto(
       await getFriendRequest(
@@ -134,10 +134,10 @@ export class FriendRequestService {
 
   maptoFriendRequestDto(friendRequest: FriendRequest): FriendRequestDto {
     const friendRequestDto = new FriendRequestDto();
-    friendRequestDto.id = friendRequest.id;
-    friendRequestDto.requesterId = friendRequest.requesterId;
-    friendRequestDto.addresseId = friendRequest.addresseId;
-    friendRequestDto.status = friendRequest.status;
+    friendRequestDto.id = friendRequest?.id ? friendRequest?.id : null;
+    friendRequestDto.requesterId = friendRequest?.requesterId;
+    friendRequestDto.addresseId = friendRequest?.addresseId;
+    friendRequestDto.status = friendRequest?.status;
     return friendRequestDto;
   }
 }
