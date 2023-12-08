@@ -17,6 +17,7 @@ import { TokenResponseDto } from './dto/token-response.dto';
 import { JwtService } from '@nestjs/jwt';
 import { UserDto } from './dto/user.dto';
 import * as jwt from 'jsonwebtoken';
+import { getPermissions } from '../../../user-rpc/src/protos/permissions.pb';
 
 @Injectable()
 export class UserService {
@@ -35,7 +36,11 @@ export class UserService {
       { baseURL: 'http://localhost:8080' },
     );
     if (await this.validatePassword(data.password, user.password)) {
-      return this.getToken(user);
+      return {
+        token: await this.getToken(user),
+        permissions: await this.assignPermissions(user.id),
+        roles: user.role
+      }
     } else {
       return false;
     }
@@ -47,7 +52,7 @@ export class UserService {
    * @param {User} user - The user object for which to generate the token response.
    * @return {Promise<TokenResponseDto>} - The token response DTO containing the generated token.
    */
-  async getToken(user: User): Promise<TokenResponseDto> {
+  async getToken(user: User): Promise<string> {
     const payload = {
       sub: user.id,
       email: user.email,
@@ -59,7 +64,7 @@ export class UserService {
       expiresIn: '1day', 
     });
 
-    return { token: token };
+    return token;
   }
 
   async validatePassword(
@@ -74,13 +79,13 @@ export class UserService {
    *
    * @return {Promise<UserDto[]>} An array of UserDto objects representing the users.
    */
-  async getUsersService(): Promise<UserDto[]> {
-    const users = await getUsers({}, { baseURL: 'http://localhost:8080' });
-    let usersDto: UserDto[];
-    users.users.forEach((user) => {
-      usersDto.push(this.mapToUserDto(user));
-    });
-    return usersDto;
+  async getUsersService(): Promise<User[]> {
+    try {
+      const users = await getUsers({}, { baseURL: 'http://localhost:8080' });
+      return users.users;
+    } catch(e) {
+      throw Error(e);
+    }
   }
 
   /**
@@ -90,7 +95,7 @@ export class UserService {
    * @return {Promise<UserDto>} A promise that resolves to the user data.
    */
   async getUserService(userId: UserId): Promise<UserDto> {
-    return this.mapToUserDto(
+    return await this.mapToUserDtoAsync(
       await getUser(userId, { baseURL: 'http://localhost:8080' }),
     );
   }
@@ -102,7 +107,7 @@ export class UserService {
    * @return {Promise<UserDto>} The created user.
    */
   async createUserService(data: CreateUserDto): Promise<UserDto> {
-    return this.mapToUserDto(
+    return await this.mapToUserDtoAsync(
       await createUser(data, { baseURL: 'http://localhost:8080' }),
     );
   }
@@ -128,9 +133,20 @@ export class UserService {
    * @return {Promise<UserDto>} - A promise that resolves to the updated user.
    */
   async updateUserService(data: UpdateUserDto): Promise<UserDto> {
-    return this.mapToUserDto(
+    return await this.mapToUserDtoAsync(
       await updateUser(data, { baseURL: 'http://localhost:8080' }),
     );
+  }
+
+  async assignPermissions(userId: string): Promise<string[]> {
+    const permissions = await getPermissions(
+      { id: userId }, 
+      { baseURL: 'http://localhost:8080' }
+    );
+    const perm: string[] = permissions.permissions.map((permission) => {
+      return permission.permission;
+    });
+    return perm;
   }
 
   mapToUserDto(user: any): UserDto {
@@ -138,6 +154,18 @@ export class UserService {
     userDto.id = user?.id ? user?.id : null;
     userDto.email = user?.email;
     userDto.role = user?.role;
+    userDto.profile = user?.profile;
+    userDto.permissions = user?.permissions;
+    return userDto;
+  }
+
+  async mapToUserDtoAsync(user: any): Promise<UserDto> {
+    const userDto = new UserDto();
+    userDto.id = user?.id ? user?.id : null;
+    userDto.email = user?.email;
+    userDto.role = user?.role;
+    userDto.profile = user?.profile;
+    userDto.permissions = await this.assignPermissions(userDto.id);
     return userDto;
   }
 }

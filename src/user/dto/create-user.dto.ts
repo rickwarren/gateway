@@ -1,5 +1,4 @@
 import { IsEmail, IsNotEmpty } from 'class-validator';
-import { ProfileDto } from '../../profile/dto/profile.dto';
 
 export class CreateUserDto {
   @IsNotEmpty()
@@ -9,5 +8,5 @@ export class CreateUserDto {
   @IsNotEmpty()
   password: string;
 
-  profile: ProfileDto;
+  role: string;
 }

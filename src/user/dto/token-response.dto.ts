@@ -1,6 +1,7 @@
-import { IsNotEmpty } from 'class-validator';
+import { PermissionsDto } from '../../permissions/dto/permissions.dto';
 
 export class TokenResponseDto {
-  @IsNotEmpty()
   token: string;
+  permissions: string[];
+  roles: string;
 }
