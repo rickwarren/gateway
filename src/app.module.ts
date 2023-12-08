@@ -6,6 +6,7 @@ import { PostModule } from './post/post.module';
 import { FriendRequestModule } from './friend-request/friend-request.module';
 import { FriendListModule } from './friend-list/friend-list.module';
 import { CommentModule } from './comment/comment.module';
+import { PermissionsModule } from './permissions/permissions.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { CommentModule } from './comment/comment.module';
     FriendRequestModule,
     FriendListModule,
     CommentModule,
+    PermissionsModule,
   ],
 })
 export class AppModule {}

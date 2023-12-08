@@ -14,6 +14,7 @@ import { UserDto } from './dto/user.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { DeleteUserResponseDto } from './dto/deleteUserResponse.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { User } from '../../../user-rpc/src/protos/user.pb';
 
 @Controller('user')
 export class UserController {
@@ -25,7 +26,7 @@ export class UserController {
    * @return {Promise<UserDto[]>} The list of users.
    */
   @Get('all')
-  getUsersService(): Promise<UserDto[]> {
+  getUsersService(): Promise<User[]> {
     return this.userService.getUsersService();
   }
 
