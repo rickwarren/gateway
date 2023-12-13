@@ -2,15 +2,22 @@ import {
   Body,
   Controller,
   Delete,
+  FileTypeValidator,
   Get,
+  MaxFileSizeValidator,
   Param,
+  ParseFilePipe,
   Post,
   Put,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
 import { CommentService } from './comment.service';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { CommentDto } from './dto/comment.dto';
+import { Comment } from '../../../post-rpc/src/protos/comment.pb';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('comment')
 export class CommentController {
@@ -22,19 +29,13 @@ export class CommentController {
    * @return {any} The comments retrieved from the comment service.
    */
   @Get('all')
-  getComments(): Promise<CommentDto[]> {
+  getComments(): Promise<Comment[]> {
     return this.commentService.getCommentsService();
   }
 
-  /**
-   * Retrieves a comment by its ID.
-   *
-   * @param {string} id - The ID of the comment to retrieve.
-   * @return {Comment} The retrieved comment.
-   */
-  @Get(':id')
-  getComment(@Param('id') id: string): Promise<CommentDto> {
-    return this.commentService.getCommentService(id);
+  @Get('post/:id')
+  getCommentsForPost(@Param('id') id: string): Promise<Comment[]> {
+    return this.commentService.getCommentsForPostService(id);
   }
 
   /**
@@ -68,5 +69,21 @@ export class CommentController {
   @Delete(':id')
   deleteComment(@Param('id') id: string): Promise<boolean> {
     return this.commentService.deleteCommentService(id);
+  }
+
+  @Post('upload')
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadAvatar(
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new FileTypeValidator({ fileType: '.(png|jpeg|jpg)' }),
+          new MaxFileSizeValidator({ maxSize: 1024 * 1024 * 4 }),
+        ],
+      }),
+    )
+    file: Express.Multer.File,
+  ) {
+    return this.commentService.uploadCommentImage(file);
   }
 }

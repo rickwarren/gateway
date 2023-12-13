@@ -2,16 +2,23 @@ import {
   Body,
   Controller,
   Delete,
+  FileTypeValidator,
   Get,
+  MaxFileSizeValidator,
   Param,
+  ParseFilePipe,
   Post,
   Put,
   Req,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
 import { PostService } from './post.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PostDto } from './dto/post.dto';
+import { Post as Posts } from '../../../post-rpc/src/protos/post.pb';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('post')
 export class PostController {
@@ -22,9 +29,9 @@ export class PostController {
    *
    * @return {Promise<Post[]>} The posts.
    */
-  @Get('all')
-  getPosts(@Req() req: any): Promise<PostDto[]> {
-    return this.postService.getPostsService(req.user.user.id);
+  @Get('all/:id')
+  getPosts(@Param('id') id: string): Promise<Posts[]> {
+    return this.postService.getPostsService(id);
   }
 
   /**
@@ -34,7 +41,7 @@ export class PostController {
    * @return {any} The retrieved post.
    */
   @Get(':id')
-  getPost(@Param() id: string): Promise<PostDto> {
+  getPost(@Param('id') id: string): Promise<Posts> {
     return this.postService.getPostService(id);
   }
 

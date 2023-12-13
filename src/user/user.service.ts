@@ -18,6 +18,7 @@ import { JwtService } from '@nestjs/jwt';
 import { UserDto } from './dto/user.dto';
 import * as jwt from 'jsonwebtoken';
 import { getPermissions } from '../../../user-rpc/src/protos/permissions.pb';
+import { getProfile } from '../../../user-rpc/src/protos/profile.pb';
 
 @Injectable()
 export class UserService {
@@ -35,11 +36,17 @@ export class UserService {
       { email: data.email },
       { baseURL: 'http://localhost:8080' },
     );
+    user.profile = await getProfile(
+      { id: user.id },
+      { baseURL: 'http://localhost:8080' },
+    );
     if (await this.validatePassword(data.password, user.password)) {
       return {
+        id: user.id,
         token: await this.getToken(user),
         permissions: await this.assignPermissions(user.id),
-        roles: user.role
+        roles: user.role,
+        userModel: user
       }
     } else {
       return false;
@@ -94,10 +101,16 @@ export class UserService {
    * @param {number} userId - The ID of the user.
    * @return {Promise<UserDto>} A promise that resolves to the user data.
    */
-  async getUserService(userId: UserId): Promise<UserDto> {
-    return await this.mapToUserDtoAsync(
-      await getUser(userId, { baseURL: 'http://localhost:8080' }),
+  async getUserService(userId: UserId): Promise<User> {
+    const user = await getUser(
+      { id: userId.id },
+      { baseURL: 'http://localhost:8080' },
     );
+    user.profile = await getProfile(
+      { id: user.id },
+      { baseURL: 'http://localhost:8080' },
+    );
+    return user;
   }
 
   /**

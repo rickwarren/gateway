@@ -34,8 +34,8 @@ export class ProfileController {
    * @param {number} userId - The ID of the user.
    * @return {any} The profile of the user.
    */
-  @Get()
-  getProfile(@Param() userId: string): Promise<ProfileDto> {
+  @Get(':userId')
+  getProfile(@Param('userId') userId: string): Promise<ProfileDto> {
     return this.profileService.getProfileService(userId);
   }
 

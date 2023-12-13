@@ -26,7 +26,7 @@ export class UserController {
    * @return {Promise<UserDto[]>} The list of users.
    */
   @Get('all')
-  getUsersService(): Promise<User[]> {
+  getUsers(): Promise<User[]> {
     return this.userService.getUsersService();
   }
 
@@ -37,7 +37,7 @@ export class UserController {
    * @return {Promise<UserDto>} A promise that resolves to the user data.
    */
   @Get(':id')
-  getUser(@Param('id') id: string): Promise<UserDto> {
+  getUser(@Param('id') id: string): Promise<User> {
     return this.userService.getUserService({ id: id });
   }
 

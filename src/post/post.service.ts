@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import {
   CreatePostDto,
+  Post,
   UpdatePostDto,
   createPost,
   deletePost,
@@ -9,10 +10,17 @@ import {
   updatePost,
 } from '../../../post-rpc/src/protos/post.pb';
 import { PostDto } from './dto/post.dto';
+import { getCommentsForPost } from '../../../post-rpc/src/protos/comment.pb';
+import { HttpService } from '@nestjs/axios';
+import { Buffer } from 'buffer';
+
+class PostIdDto {
+  id: string;
+}
 
 @Injectable()
 export class PostService {
-  constructor() {}
+  constructor(private readonly httpService: HttpService) {}
 
   /**
    * Retrieves the posts.
@@ -20,13 +28,15 @@ export class PostService {
    * @param {number} userId - The ID of the user for retrieving posts.
    * @return {Promise<PostDto[]>} A Promise that resolves to an array of PostDto objects representing the retrieved posts.
    */
-  async getPostsService(userId: string): Promise<PostDto[]> {
-    const posts = await getPosts(userId, { baseURL: 'http://localhost:8081' });
-    let postsDto: PostDto[];
-    posts.posts.forEach((post) => {
-      postsDto.push(this.mapToPostDto(post));
-    });
-    return postsDto;
+  async getPostsService(locationId: string): Promise<Post[]> {
+    const posts = await getPosts({ id: locationId }, { baseURL: 'http://localhost:8081' });
+    const results = await Promise.all(posts.posts.map(async (post) => {
+      const comments = await getCommentsForPost({id: post.id}, { baseURL: 'http://localhost:8081' });
+      post.comments = comments.comments;
+      return post;
+    }));
+
+    return results;
   }
 
   /**
@@ -35,10 +45,12 @@ export class PostService {
    * @param {number} id - The ID of the post to retrieve.
    * @return {Promise<PostDto>} A Promise that resolves to a PostDto object representing the retrieved post.
    */
-  async getPostService(id: string): Promise<PostDto> {
-    return this.mapToPostDto(
-      await getPost({ id: id }, { baseURL: 'http://localhost:8081' }),
-    );
+  async getPostService(postId: string): Promise<Post> {
+    const pId: PostIdDto = {
+      id: postId
+    };
+    const post = await getPost(pId , { baseURL: 'http://localhost:8081' });
+    return post;
   }
 
   /**
@@ -48,9 +60,7 @@ export class PostService {
    * @return {Promise<PostDto>} A Promise that resolves to a PostDto object representing the created post.
    */
   async createPostService(data: CreatePostDto): Promise<PostDto> {
-    return this.mapToPostDto(
-      await createPost(data, { baseURL: 'http://localhost:8081' }),
-    );
+    return await createPost(data, { baseURL: 'http://localhost:8081' });
   }
 
   /**
@@ -60,9 +70,7 @@ export class PostService {
    * @return {Promise<PostDto>} A Promise that resolves to a PostDto object representing the updated post data.
    */
   async updatePostService(data: UpdatePostDto): Promise<PostDto> {
-    return this.mapToPostDto(
-      await updatePost(data, { baseURL: 'http://localhost:8081' }),
-    );
+    return updatePost(data, { baseURL: 'http://localhost:8081' });
   }
 
   /**
@@ -77,20 +85,5 @@ export class PostService {
       { baseURL: 'http://localhost:8081' },
     );
     return success.success;
-  }
-
-  /**
-   * Maps the response data to a PostDto object.
-   *
-   * @param {any} post - The response data representing a post.
-   * @return {PostDto} The mapped PostDto object.
-   */
-  mapToPostDto(post: any): PostDto {
-    const postDto = new PostDto();
-    postDto.id = post?.id ? post?.id : null;
-    postDto.authorId = post?.authorId;
-    postDto.message = post?.message;
-    postDto.attachment = post?.attachment;
-    return postDto;
   }
 }
