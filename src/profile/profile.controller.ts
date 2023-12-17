@@ -8,10 +8,11 @@ import {
   Put,
 } from '@nestjs/common';
 import { ProfileService } from './profile.service';
-import { ProfileDto } from './dto/profile.dto';
 import { CreateProfileDto } from './dto/create-profile.dto';
-import { UpdateProfileDto } from './dto/update-profile.dto';
 import { DeleteProfileResponseDto } from './dto/deleteProfileResponse.dto';
+import { ProfileDto } from './dto/profile.dto';
+import { UpdateProfileDto } from './dto/update-profile.dto';
+
 
 @Controller('profile')
 export class ProfileController {
@@ -67,8 +68,8 @@ export class ProfileController {
    * @param {UpdateProfileDto} data - The data used to update the profile.
    * @return {Promise<ProfileDto>} The updated profile.
    */
-  @Put('update')
-  updateProfile(data: UpdateProfileDto): Promise<ProfileDto> {
+  @Put()
+  updateProfile(@Body() data: UpdateProfileDto): Promise<ProfileDto> {
     return this.profileService.updateProfileService(data);
   }
 

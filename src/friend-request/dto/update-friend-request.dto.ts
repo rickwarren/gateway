@@ -1,5 +1,4 @@
 import { IsNotEmpty } from 'class-validator';
-import * as protoscript from 'protoscript';
 
 export class UpdateFriendRequestDto {
   @IsNotEmpty()
@@ -13,6 +12,6 @@ export class UpdateFriendRequestDto {
 
   status: string;
 
-  createdAt: protoscript.Timestamp;
-  updatedAt: protoscript.Timestamp;
+  createdAt: string;
+  updatedAt: string;
 }

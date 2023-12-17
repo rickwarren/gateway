@@ -20,6 +20,6 @@ export class UpdateProfileDto {
   language: string;
   mobilePhone: string;
   visibility: string;
-  createdAt: protoscript.Timestamp;
-  updatedAt: protoscript.Timestamp;
+  createdAt: string;
+  updatedAt: string;
 }

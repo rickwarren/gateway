@@ -5,6 +5,6 @@ export class UpdateFriendListDto {
   requesterId: string;
   addresseId: string;
   friendType: string;
-  createdAt: protoscript.Timestamp;
-  updatedAt: protoscript.Timestamp;
+  createdAt: string;
+  updatedAt: string;
 }

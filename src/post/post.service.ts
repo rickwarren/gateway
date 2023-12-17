@@ -13,6 +13,8 @@ import { PostDto } from './dto/post.dto';
 import { getCommentsForPost } from '../../../post-rpc/src/protos/comment.pb';
 import { HttpService } from '@nestjs/axios';
 import { Buffer } from 'buffer';
+import { catchError, firstValueFrom } from 'rxjs';
+import { AxiosError } from 'axios';
 
 class PostIdDto {
   id: string;
@@ -85,5 +87,25 @@ export class PostService {
       { baseURL: 'http://localhost:8081' },
     );
     return success.success;
+  }
+
+  async uploadImage(
+    file: Express.Multer.File,
+  ): Promise<any> {
+    const formData = new FormData();
+    formData.append('image', file.buffer.toString('base64'));
+    const { data: imageData } = await firstValueFrom(
+      this.httpService
+        .post(
+          `https://api.imgbb.com/1/upload?key=5f1f4d960336dd0a35c3b120aaa477ef`,
+          formData,
+        )
+        .pipe(
+          catchError((error: AxiosError) => {
+            throw error;
+          }),
+        ),
+    );
+    return imageData.data.url;
   }
 }

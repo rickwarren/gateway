@@ -10,11 +10,9 @@ import {
 import { UserService } from './user.service';
 import { UserLoginDto } from './dto/user-login.dto';
 import { TokenResponseDto } from './dto/token-response.dto';
-import { UserDto } from './dto/user.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { DeleteUserResponseDto } from './dto/deleteUserResponse.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { User } from '../../../user-rpc/src/protos/user.pb';
+import { UpdateUserDto, UserDto } from '../../../user-rpc/src/protos/user.pb';
 
 @Controller('user')
 export class UserController {
@@ -26,7 +24,7 @@ export class UserController {
    * @return {Promise<UserDto[]>} The list of users.
    */
   @Get('all')
-  getUsers(): Promise<User[]> {
+  getUsers(): Promise<UserDto[]> {
     return this.userService.getUsersService();
   }
 
@@ -37,9 +35,25 @@ export class UserController {
    * @return {Promise<UserDto>} A promise that resolves to the user data.
    */
   @Get(':id')
-  getUser(@Param('id') id: string): Promise<User> {
+  getUser(@Param('id') id: string): Promise<UserDto> {
     return this.userService.getUserService({ id: id });
   }
+
+  @Get('name/:name')
+  getUserByUrlString(@Param('name') name: string): Promise<UserDto> {
+    return this.userService.getUserByUrlStringService(name);
+  }
+
+    /**
+   * Retrieves a user by their ID.
+   *
+   * @param {number} userId - The ID of the user to retrieve.
+   * @return {Promise<UserDto>} A promise that resolves to the user data.
+   */
+    @Post('auth')
+    userAuth(@Body() data: any): Promise<any> {
+      return this.userService.userAuthService(data);
+    }
 
   /**
    * Creates a new user.

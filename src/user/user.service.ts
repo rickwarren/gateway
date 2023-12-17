@@ -10,15 +10,16 @@ import {
   CreateUserDto,
   UpdateUserDto,
   UserId,
-  User,
+  UserDto,
+  getUserByUrlString
 } from '../../../user-rpc/src/protos/user.pb';
 import { UserLoginDto } from './dto/user-login.dto';
 import { TokenResponseDto } from './dto/token-response.dto';
 import { JwtService } from '@nestjs/jwt';
-import { UserDto } from './dto/user.dto';
 import * as jwt from 'jsonwebtoken';
 import { getPermissions } from '../../../user-rpc/src/protos/permissions.pb';
 import { getProfile } from '../../../user-rpc/src/protos/profile.pb';
+import { jwtDecode } from "jwt-decode";
 
 @Injectable()
 export class UserService {
@@ -32,24 +33,54 @@ export class UserService {
    * or `false` if login fails.
    */
   async loginService(data: UserLoginDto): Promise<TokenResponseDto | boolean> {
-    const user = await getUserByEmail(
-      { email: data.email },
-      { baseURL: 'http://localhost:8080' },
-    );
-    user.profile = await getProfile(
-      { id: user.id },
-      { baseURL: 'http://localhost:8080' },
-    );
-    if (await this.validatePassword(data.password, user.password)) {
+    try {
+      const user = await getUserByEmail(
+        { email: data.email },
+        { baseURL: 'http://localhost:8080' },
+      );
+      if(user) {
+        user.profile = await getProfile(
+          { id: user.id },
+          { baseURL: 'http://localhost:8080' },
+        );
+        if (await this.validatePassword(data.password, user.password)) {
+          return {
+            id: user.id,
+            token: await this.getToken(user),
+            permissions: await this.assignPermissions(user.id),
+            roles: user.role,
+            userModel: user
+          }
+        } else {
+          return false;
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async userAuthService(data: jwt.JwtPayload) {
+    const decoded = jwtDecode(data.token);
+    try {
+      const user = await getUser(
+        { id: decoded.sub},
+        { baseURL: 'http://localhost:8080' },
+      );
+      if(user == undefined) { return }
+      user.profile = await getProfile(
+        { id: user.id },
+        { baseURL: 'http://localhost:8080' },
+      );
       return {
         id: user.id,
-        token: await this.getToken(user),
+        userModel: user,
+        token:  data.token,
         permissions: await this.assignPermissions(user.id),
-        roles: user.role,
-        userModel: user
-      }
-    } else {
-      return false;
+        role: user.role
+      };
+    } catch (error) {
+      console.log(error);
     }
   }
 
@@ -59,19 +90,22 @@ export class UserService {
    * @param {User} user - The user object for which to generate the token response.
    * @return {Promise<TokenResponseDto>} - The token response DTO containing the generated token.
    */
-  async getToken(user: User): Promise<string> {
+  async getToken(user: UserDto): Promise<string> {
     const payload = {
       sub: user.id,
       email: user.email,
       id: user.id,
       role: user.role,
     };
-    const token = await jwt.sign(payload, 'secretkey', {
-      algorithm: 'HS256',
-      expiresIn: '1day', 
-    });
-
-    return token;
+    try {
+      const token = await jwt.sign(payload, 'secretkey', {
+        algorithm: 'HS256',
+        expiresIn: '1day', 
+      });
+      return token;
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   async validatePassword(
@@ -86,7 +120,7 @@ export class UserService {
    *
    * @return {Promise<UserDto[]>} An array of UserDto objects representing the users.
    */
-  async getUsersService(): Promise<User[]> {
+  async getUsersService(): Promise<UserDto[]> {
     try {
       const users = await getUsers({}, { baseURL: 'http://localhost:8080' });
       return users.users;
@@ -101,16 +135,34 @@ export class UserService {
    * @param {number} userId - The ID of the user.
    * @return {Promise<UserDto>} A promise that resolves to the user data.
    */
-  async getUserService(userId: UserId): Promise<User> {
+  async getUserService(userId: UserId): Promise<UserDto> {
     const user = await getUser(
       { id: userId.id },
       { baseURL: 'http://localhost:8080' },
     );
+    if(user == undefined) { return }
     user.profile = await getProfile(
       { id: user.id },
       { baseURL: 'http://localhost:8080' },
     );
     return user;
+  }
+
+  async getUserByUrlStringService(urlString: string): Promise<UserDto> {
+    try {
+    const user = await getUserByUrlString(
+      { urlString: urlString },
+      { baseURL: 'http://localhost:8080' },
+    );
+    if(user == undefined) { return }
+    user.profile = await getProfile(
+      { id: user.id },
+      { baseURL: 'http://localhost:8080' },
+    );
+    return user;
+    } catch(e) {
+      throw Error(e);
+    }
   }
 
   /**
@@ -120,9 +172,7 @@ export class UserService {
    * @return {Promise<UserDto>} The created user.
    */
   async createUserService(data: CreateUserDto): Promise<UserDto> {
-    return await this.mapToUserDtoAsync(
-      await createUser(data, { baseURL: 'http://localhost:8080' }),
-    );
+    return await createUser(data, { baseURL: 'http://localhost:8080' });
   }
 
   /**
@@ -146,9 +196,7 @@ export class UserService {
    * @return {Promise<UserDto>} - A promise that resolves to the updated user.
    */
   async updateUserService(data: UpdateUserDto): Promise<UserDto> {
-    return await this.mapToUserDtoAsync(
-      await updateUser(data, { baseURL: 'http://localhost:8080' }),
-    );
+    return await updateUser(data, { baseURL: 'http://localhost:8080' });
   }
 
   async assignPermissions(userId: string): Promise<string[]> {
@@ -156,29 +204,43 @@ export class UserService {
       { id: userId }, 
       { baseURL: 'http://localhost:8080' }
     );
-    const perm: string[] = permissions.permissions.map((permission) => {
-      return permission.permission;
-    });
-    return perm;
+    if(permissions) {
+      const perm: string[] = permissions.permissions.map((permission) => {
+        return permission.permission;
+      });
+      return perm;
+    }
   }
 
-  mapToUserDto(user: any): UserDto {
-    const userDto = new UserDto();
-    userDto.id = user?.id ? user?.id : null;
-    userDto.email = user?.email;
-    userDto.role = user?.role;
-    userDto.profile = user?.profile;
-    userDto.permissions = user?.permissions;
-    return userDto;
-  }
+  urlBase64Decode(str: string) {
+    let output = str.replace(/-/g, '+').replace(/_/g, '/');
+    switch (output.length % 4) {
+        case 0:
+            break;
+        case 2:
+            output += '==';
+            break;
+        case 3:
+            output += '=';
+            break;
+        default:
+            // tslint:disable-next-line:no-string-throw
+            throw 'Illegal base64url string!';
+    }
+    return decodeURIComponent((<any>window).escape(window.atob(output)));
+}
 
-  async mapToUserDtoAsync(user: any): Promise<UserDto> {
-    const userDto = new UserDto();
-    userDto.id = user?.id ? user?.id : null;
-    userDto.email = user?.email;
-    userDto.role = user?.role;
-    userDto.profile = user?.profile;
-    userDto.permissions = await this.assignPermissions(userDto.id);
-    return userDto;
+decodeToken(token: string = '') {
+    if (token === null || token === '') { return { 'upn': '' }; }
+    const parts = token.split('.');
+    if (parts.length !== 3) {
+
+        throw new Error('JWT must have 3 parts');
+    }
+    const decoded = this.urlBase64Decode(parts[1]);
+    if (!decoded) {
+        throw new Error('Cannot decode the token');
+    }
+    return JSON.parse(decoded);
   }
 }

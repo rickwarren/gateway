@@ -77,4 +77,20 @@ export class PostController {
   deletePost(@Param() id: string): Promise<boolean> {
     return this.postService.deletePostService(id);
   }
+
+  @Post('upload')
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadAvatar(
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new FileTypeValidator({ fileType: '.(png|jpeg|jpg)' }),
+          new MaxFileSizeValidator({ maxSize: 1024 * 1024 * 4 }),
+        ],
+      }),
+    )
+    file: Express.Multer.File,
+  ): Promise<string> {
+    return this.postService.uploadImage(file);
+  }
 }
