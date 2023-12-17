@@ -1,6 +1,4 @@
 import { IsEmail, IsNotEmpty } from 'class-validator';
-import * as protoscript from "protoscript";
-import { PermissionsDto } from '../../permissions/dto/permissions.dto';
 import { ProfileDto } from '../../profile/dto/profile.dto';
 
 export class UpdateUserDto {
@@ -17,6 +15,8 @@ export class UpdateUserDto {
 
   permissions: string[];
 
-  createdAt: protoscript.Timestamp;
-  updatedAt: protoscript.Timestamp;
+  urlString: string;
+
+  createdAt: string;
+  updatedAt: string;
 }

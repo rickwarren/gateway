@@ -1,13 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import {
   CreateFriendListDto,
-  FriendList,
+  FriendListDto,
   addFriend,
   areUsersFriends,
   getFriendsByUserId,
   removeFriend,
 } from '../../../friend-rpc/src/protos/friend-list.pb';
-import { FriendListDto } from './dto/friend-list.dto';
 
 @Injectable()
 export class FriendListService {
@@ -26,7 +25,7 @@ export class FriendListService {
     );
     let friendListsDto: FriendListDto[];
     friends.friends.forEach((friend) => {
-      friendListsDto.push(this.mapFriendListToDto(friend));
+      friendListsDto.push(friend);
     });
     return friendListsDto;
   }
@@ -53,9 +52,8 @@ export class FriendListService {
    * @return {Promise<FriendListDto>} A promise that resolves to the friend list after the friend has been added.
    * */
   async addFriendService(data: CreateFriendListDto): Promise<FriendListDto> {
-    return this.mapFriendListToDto(
-      await addFriend(data, { baseURL: 'http://localhost:8082' }),
-    );
+    return await addFriend(data, { baseURL: 'http://localhost:8082' });
+
   }
 
   /**
@@ -70,14 +68,5 @@ export class FriendListService {
       { baseURL: 'http://localhost:8082' },
     );
     return result.success;
-  }
-
-  mapFriendListToDto(friendList: FriendList): FriendListDto {
-    const friendListDto = new FriendListDto();
-    friendListDto.id = friendList?.id ? friendList?.id : null;
-    friendListDto.requesterId = friendList?.requesterId;
-    friendListDto.addresseId = friendList?.addresseId;
-    friendListDto.friendType = friendList?.friendType;
-    return friendListDto;
   }
 }

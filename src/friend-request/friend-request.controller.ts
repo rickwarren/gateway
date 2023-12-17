@@ -86,7 +86,7 @@ export class FriendRequestController {
    * @param {number} id - The ID of the friend request to accept.
    * @return {Promise<boolean>} A promise that resolves to true if the friend request was accepted successfully, or false otherwise.
    * */
-  @Post(':id/accept')
+  @Get(':id/accept')
   acceptFriendRequest(@Param('id') id: string): Promise<boolean> {
     return this.friendRequestService.acceptFriendRequestService(id);
   }
@@ -97,7 +97,7 @@ export class FriendRequestController {
    * @param {number} id - The ID of the friend request to reject.
    * @return {Promise<boolean>} A promise that resolves to true if the friend request was successfully rejected, or false otherwise.
    * */
-  @Post(':id/reject')
+  @Get(':id/reject')
   rejectFriendRequest(@Param('id') id: string): Promise<boolean> {
     return this.friendRequestService.rejectFriendRequestService(id);
   }

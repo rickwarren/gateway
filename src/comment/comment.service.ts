@@ -4,43 +4,54 @@ import {
   UpdateCommentDto,
   createComment,
   deleteComment,
-  getComment,
   getComments,
   updateComment,
+  Comment,
+  getCommentsForPost,
 } from '../../../post-rpc/src/protos/comment.pb';
 import { CommentDto } from './dto/comment.dto';
+import { HttpService } from '@nestjs/axios';
 
 @Injectable()
 export class CommentService {
-  constructor() {}
+  constructor(private readonly httpService: HttpService) {}
 
   /**
    * Retrieves the comments.
    *
    * @return {Promise<any>} A promise that resolves to an array of comments.
    */
-  async getCommentsService(): Promise<CommentDto[]> {
+  async getCommentsService(): Promise<Comment[]> {
     const comments = await getComments(
       {},
       { baseURL: 'http://localhost:8081' },
     );
-    comments.comments.map((comment) => {
-      const temp = this.mapToCommentDto(comment);
-      return temp;
-    });
     return comments.comments;
   }
 
   /**
-   * Retrieves a comment by its ID.
-   *
-   * @param {string} id - The ID of the comment.
-   * @return {Promise<any>} A Promise that resolves to the comment.
-   */
-  async getCommentService(id: string): Promise<CommentDto> {
-    return this.mapToCommentDto(
-      await getComment({ id: id }, { baseURL: 'http://localhost:8081' }),
-    );
+       * Retrieves comments for a specific post by making a request to the server.
+       * 
+       * @param id - The ID of the post for which to retrieve the comments.
+       * @returns An array of CommentDto objects representing the comments for the specified post.
+       * @throws Error if there is an error retrieving the comments.
+       * 
+       * @example
+       * const commentService = new CommentService();
+       * const postId = '12345';
+       * const comments = await commentService.getCommentsForPostService(postId);
+       * console.log(comments);
+       * 
+       * In this example, we create an instance of the CommentService class and call the getCommentsForPostService method with a post ID.
+       * The method makes a request to the server to retrieve the comments for the specified post.
+       * The returned comments are then logged to the console.
+       */
+  async getCommentsForPostService(postId: string): Promise<Comment[]> {
+      const comments = await getCommentsForPost(
+          { id: postId },
+          { baseURL: 'http://localhost:8081' },
+      );
+      return comments.comments;
   }
 
   /**
@@ -50,9 +61,7 @@ export class CommentService {
    * @returns {Promise<any>} A promise that resolves with the created comment.
    */
   async createCommentService(data: CreateCommentDto): Promise<CommentDto> {
-    return this.mapToCommentDto(
-      await createComment(data, { baseURL: 'http://localhost:8081' }),
-    );
+    return await createComment(data, { baseURL: 'http://localhost:8081' });
   }
 
   /**
@@ -62,9 +71,8 @@ export class CommentService {
    * @return {Promise<any>} A promise that resolves with the updated comment.
    */
   async updateCommentService(data: UpdateCommentDto): Promise<CommentDto> {
-    return this.mapToCommentDto(
-      await updateComment(data, { baseURL: 'http://localhost:8081' }),
-    );
+    return await updateComment(data, { baseURL: 'http://localhost:8081' });
+
   }
 
   /**
@@ -81,13 +89,11 @@ export class CommentService {
     return success.success;
   }
 
-  mapToCommentDto(comment: any): CommentDto {
-    const commentDto = new CommentDto();
-    commentDto.id = comment?.id ? comment?.id : null;
-    commentDto.authorId = comment?.authorId;
-    commentDto.message = comment?.message;
-    commentDto.attachment = comment?.attachment;
-    commentDto.postId = comment?.postId;
-    return commentDto;
+  async uploadCommentImage(
+    image: Express.Multer.File,
+  ): Promise<any> {
+    const formData = new FormData();
+    formData.append('image', image.buffer.toString('base64'));
+    return await this.httpService.post<any>(`https://api.imgbb.com/1/upload?key=${process.env.IMG_API_KEY}`, formData);
   }
 }
