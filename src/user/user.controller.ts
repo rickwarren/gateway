@@ -39,6 +39,11 @@ export class UserController {
     return this.userService.getUserService({ id: id });
   }
 
+  @Get('/urlstring/:urlString')
+  getUserBySlug(@Param('urlString') urlString: string): Promise<UserDto> {
+    return this.userService.getUserBySlugService(urlString);
+  }
+
   @Get('name/:name')
   getUserByUrlString(@Param('name') name: string): Promise<UserDto> {
     return this.userService.getUserByUrlStringService(name);

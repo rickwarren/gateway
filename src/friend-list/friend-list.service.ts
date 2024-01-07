@@ -23,11 +23,7 @@ export class FriendListService {
       { id: userId },
       { baseURL: 'http://localhost:8082' },
     );
-    let friendListsDto: FriendListDto[];
-    friends.friends.forEach((friend) => {
-      friendListsDto.push(friend);
-    });
-    return friendListsDto;
+    return friends.friends;
   }
 
   /**

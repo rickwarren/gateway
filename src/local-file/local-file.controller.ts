@@ -39,6 +39,16 @@ export class LocalFileController {
         return this.localFileService.createLocalFileService(file);
     }
 
+    @Post('video')
+    @UseInterceptors(FileInterceptor('file', {
+        storage: diskStorage({
+            destination: './uploads'
+        })
+    }))
+    createLocalVideoFile(@UploadedFile() file: Express.Multer.File) {
+        return this.localFileService.createLocalVideoFileService(file);
+    }
+
     @Delete(':id')
     deleteLocalFile(@Param('id') id: string): Promise<DeleteLocalFileResponseDto> {
         return this.localFileService.deleteLocalFileService(id);
