@@ -17,7 +17,7 @@ import { PostService } from './post.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PostDto } from './dto/post.dto';
-import { Post as Posts } from '../../../post-rpc/src/protos/post.pb';
+import { DeletePostResponseDto, Post as Posts } from '../../../post-rpc/src/protos/post.pb';
 import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('post')
@@ -74,7 +74,7 @@ export class PostController {
    * @return {void} - Returns nothing.
    */
   @Delete()
-  deletePost(@Param() id: string): Promise<boolean> {
+  deletePost(@Param() id: string): Promise<DeletePostResponseDto> {
     return this.postService.deletePostService(id);
   }
 

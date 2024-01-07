@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import {
   CreatePostDto,
+  DeletePostResponseDto,
   Post,
   UpdatePostDto,
   createPost,
@@ -81,12 +82,11 @@ export class PostService {
    * @param {number} id - The ID of the post to be deleted.
    * @return {Promise<boolean>} A Promise that resolves to a boolean value indicating whether the post was successfully deleted.
    */
-  async deletePostService(id: string): Promise<boolean> {
-    const success = await deletePost(
+  async deletePostService(id: string): Promise<DeletePostResponseDto> {
+    return await deletePost(
       { id: id },
       { baseURL: 'http://localhost:8081' },
     );
-    return success.success;
   }
 
   async uploadImage(

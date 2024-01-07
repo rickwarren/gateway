@@ -11,7 +11,8 @@ import {
   UpdateUserDto,
   UserId,
   UserDto,
-  getUserByUrlString
+  getUserByUrlString,
+  getUserBySlug
 } from '../../../user-rpc/src/protos/user.pb';
 import { UserLoginDto } from './dto/user-login.dto';
 import { TokenResponseDto } from './dto/token-response.dto';
@@ -138,6 +139,19 @@ export class UserService {
   async getUserService(userId: UserId): Promise<UserDto> {
     const user = await getUser(
       { id: userId.id },
+      { baseURL: 'http://localhost:8080' },
+    );
+    if(user == undefined) { return }
+    user.profile = await getProfile(
+      { id: user.id },
+      { baseURL: 'http://localhost:8080' },
+    );
+    return user;
+  }
+
+  async getUserBySlugService(urlString: string): Promise<UserDto> {
+    const user = await getUserBySlug(
+      { id: urlString },
       { baseURL: 'http://localhost:8080' },
     );
     if(user == undefined) { return }

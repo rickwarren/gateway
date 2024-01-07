@@ -22,6 +22,17 @@ export class LocalFileService {
         );
     }
 
+    async createLocalVideoFileService(file: Express.Multer.File): Promise<LocalFileDto> {
+        console.log(file);
+        return await createLocalFile({ 
+                filename: file.originalname,
+                path: file.path,
+                mimetype: file.mimetype,
+            },
+            { baseURL: 'http://localhost:8080' },
+        );
+    }
+
     async deleteLocalFileService(fileId: string): Promise<DeleteLocalFileResponseDto> {
         return await deleteLocalFile(
             { id: fileId },
