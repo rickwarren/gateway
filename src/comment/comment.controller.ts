@@ -18,6 +18,7 @@ import { CreateCommentDto } from './dto/create-comment.dto';
 import { CommentDto } from './dto/comment.dto';
 import { Comment } from '../../../post-rpc/src/protos/comment.pb';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 
 @Controller('comment')
 export class CommentController {
@@ -28,11 +29,15 @@ export class CommentController {
    *
    * @return {any} The comments retrieved from the comment service.
    */
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(30)
   @Get('all')
   getComments(): Promise<Comment[]> {
     return this.commentService.getCommentsService();
   }
 
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(30)
   @Get('post/:id')
   getCommentsForPost(@Param('id') id: string): Promise<Comment[]> {
     return this.commentService.getCommentsForPostService(id);

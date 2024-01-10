@@ -1,7 +1,8 @@
-import { Body, Controller, Get, Param, Post, Req } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Req, UseInterceptors } from '@nestjs/common';
 import { FriendListService } from './friend-list.service';
 import { FriendListDto } from './dto/friend-list.dto';
 import { CreateFriendListDto } from './dto/create-friend-list.dto';
+import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 
 @Controller('friend-list')
 export class FriendListController {
@@ -13,6 +14,8 @@ export class FriendListController {
    * @param {@Req()} req - The request object.
    * @returns {Promise<FriendListDto[]>} A promise that resolves to an array of FriendListDto objects representing the user's friends.
    */
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(30)
   @Get()
   getFriends(@Req() req: any): Promise<FriendListDto[]> {
     return this.friendListService.getFriendsByUserIdService(req.user.user.id);
@@ -24,6 +27,8 @@ export class FriendListController {
    * @param {string} userId - The ID of the user.
    * @return {Promise<FriendListDto[]>} A Promise that resolves to a list of FriendListDto objects.
    */
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(30)
   @Get(':userId')
   getFriendsByUserId(
     @Param('userId') userId: string,
@@ -38,6 +43,8 @@ export class FriendListController {
    * @param {string} userId - The ID of the second user.
    * @return {Promise<boolean>} A promise that resolves to a boolean indicating whether the two users are friends.
    * */
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(30)
   @Get(':id/:userId')
   areUsersFriends(
     @Param('id') id: string,
@@ -63,7 +70,7 @@ export class FriendListController {
    * @param {string} id - The ID of the friend to be removed.
    * @return {Promise<boolean>} A promise that resolves to true if the friend is successfully removed, false otherwise.
    * */
-  @Get('remove/:id')
+  @Delete('remove/:id')
   removeFriend(@Param('id') id: string): Promise<boolean> {
     return this.friendListService.removeFriendService(id);
   }

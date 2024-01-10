@@ -7,11 +7,13 @@ import {
   Post,
   Put,
   Req,
+  UseInterceptors,
 } from '@nestjs/common';
 import { FriendRequestService } from './friend-request.service';
 import { FriendRequestDto } from './dto/friend-request.dto';
 import { CreateFriendRequestDto } from './dto/create-friend-request.dto';
 import { UpdateFriendRequestDto } from './dto/update-friend-request.dto';
+import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 
 @Controller('friend-request')
 export class FriendRequestController {
@@ -23,6 +25,8 @@ export class FriendRequestController {
    * @param {@Req()} req - The request object.
    * @returns {Promise<FriendRequestDto[]>} A promise that resolves to an array of friend request DTOs.
    */
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(30)
   @Get()
   getFriendRequests(@Req() req: any): Promise<FriendRequestDto[]> {
     return this.friendRequestService.getFriendRequestsByUserIdService(

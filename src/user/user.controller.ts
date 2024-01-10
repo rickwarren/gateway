@@ -13,6 +13,8 @@ import { TokenResponseDto } from './dto/token-response.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { DeleteUserResponseDto } from './dto/deleteUserResponse.dto';
 import { UpdateUserDto, UserDto } from '../../../user-rpc/src/protos/user.pb';
+import { UseInterceptors } from '@nestjs/common';
+import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 
 @Controller('user')
 export class UserController {
@@ -23,6 +25,8 @@ export class UserController {
    *
    * @return {Promise<UserDto[]>} The list of users.
    */
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(30)
   @Get('all')
   getUsers(): Promise<UserDto[]> {
     return this.userService.getUsersService();
@@ -34,16 +38,22 @@ export class UserController {
    * @param {number} userId - The ID of the user to retrieve.
    * @return {Promise<UserDto>} A promise that resolves to the user data.
    */
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(30)
   @Get(':id')
   getUser(@Param('id') id: string): Promise<UserDto> {
     return this.userService.getUserService({ id: id });
   }
 
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(30)
   @Get('/urlstring/:urlString')
   getUserBySlug(@Param('urlString') urlString: string): Promise<UserDto> {
     return this.userService.getUserBySlugService(urlString);
   }
-
+  
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(30)
   @Get('name/:name')
   getUserByUrlString(@Param('name') name: string): Promise<UserDto> {
     return this.userService.getUserByUrlStringService(name);

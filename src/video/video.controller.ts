@@ -1,16 +1,21 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, UseInterceptors } from '@nestjs/common';
 import { VideoService } from './video.service';
 import { CreateVideoDto, DeleteVideoResponseDto, VideoDto } from '../../../user-rpc/src/protos/video.pb';
+import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 
 @Controller('video')
 export class VideoController {
     constructor(private readonly videoService: VideoService) {}
 
+    @UseInterceptors(CacheInterceptor)
+    @CacheTTL(30)
     @Get('all/:userId')
     async getVideos(@Param('userId') userId: string): Promise<VideoDto[]> {
         return await this.videoService.getVideosService(userId);
     }
 
+    @UseInterceptors(CacheInterceptor)
+    @CacheTTL(30)
     @Get(':id')
     async getVideo(@Param('id') id: string): Promise<VideoDto> {
         return await this.videoService.getVideoService(id);

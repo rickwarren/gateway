@@ -6,11 +6,14 @@ import { diskStorage } from 'multer';
 import { createReadStream } from 'fs';
 import { join } from 'path';
 import { Response as Res } from 'express';
+import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 
 @Controller('upload')
 export class LocalFileController {
     constructor(private readonly localFileService: LocalFileService) {}
 
+    @UseInterceptors(CacheInterceptor)
+    @CacheTTL(30)
     @Get(':id')
     async getLocalFile(@Param('id') id: string, @Response({ passthrough: true }) res: Res) {
         const file = await this.localFileService.getLocalFileService(id);
