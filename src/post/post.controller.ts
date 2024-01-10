@@ -19,6 +19,7 @@ import { UpdatePostDto } from './dto/update-post.dto';
 import { PostDto } from './dto/post.dto';
 import { DeletePostResponseDto, Post as Posts } from '../../../post-rpc/src/protos/post.pb';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 
 @Controller('post')
 export class PostController {
@@ -29,6 +30,8 @@ export class PostController {
    *
    * @return {Promise<Post[]>} The posts.
    */
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(30)
   @Get('all/:id')
   getPosts(@Param('id') id: string): Promise<Posts[]> {
     return this.postService.getPostsService(id);
@@ -40,6 +43,8 @@ export class PostController {
    * @param {number} id - The ID of the post to retrieve.
    * @return {any} The retrieved post.
    */
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(30)
   @Get(':id')
   getPost(@Param('id') id: string): Promise<Posts> {
     return this.postService.getPostService(id);

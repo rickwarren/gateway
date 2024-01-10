@@ -6,12 +6,14 @@ import {
   Param,
   Post,
   Put,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ProfileService } from './profile.service';
 import { CreateProfileDto } from './dto/create-profile.dto';
 import { DeleteProfileResponseDto } from './dto/deleteProfileResponse.dto';
 import { ProfileDto } from './dto/profile.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
+import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 
 
 @Controller('profile')
@@ -35,6 +37,8 @@ export class ProfileController {
    * @param {number} userId - The ID of the user.
    * @return {any} The profile of the user.
    */
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(30)
   @Get(':userId')
   getProfile(@Param('userId') userId: string): Promise<ProfileDto> {
     return this.profileService.getProfileService(userId);
@@ -46,6 +50,8 @@ export class ProfileController {
    * @param {any} data - The data used to find profiles.
    * @return {any} The profiles found based on the provided data.
    */
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(30)
   @Get('all')
   getProfiles(): Promise<ProfileDto[]> {
     return this.profileService.getProfilesService();

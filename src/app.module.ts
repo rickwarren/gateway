@@ -14,6 +14,9 @@ import { CharityModule } from './charity/charity.module';
 import { UserCharityModule } from './user-charity/user-charity.module';
 import { CorporationModule } from './corporation/corporation.module';
 import { UserCorporationModule } from './user-corporation/user-corporation.module';
+import { CacheModule, CacheInterceptor } from '@nestjs/cache-manager';
+import * as redisStore from 'cache-manager-redis-store';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -32,6 +35,13 @@ import { UserCorporationModule } from './user-corporation/user-corporation.modul
     UserCharityModule,
     CorporationModule,
     UserCorporationModule,
+    CacheModule.register({ isGlobal: true }),
   ],
+  providers: [
+    {
+      provide:APP_INTERCEPTOR,
+      useClass: CacheInterceptor
+    },
+  ]
 })
 export class AppModule {}

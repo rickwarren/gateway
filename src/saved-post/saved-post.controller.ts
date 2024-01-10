@@ -5,10 +5,12 @@ import {
   Get,
   Param,
   Post,
+  UseInterceptors,
 } from '@nestjs/common';
 import { SavedPostService } from './saved-post.service';
 import { PostDto } from './dto/post.dto';
 import { CreateSavedPostDto, DeleteSavedPostResponseDto, SavedPostDto } from '../../../post-rpc/src/protos/saved-post.pb';
+import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 
 @Controller('post')
 export class SavedPostController {
@@ -19,6 +21,8 @@ export class SavedPostController {
    *
    * @return {Promise<Post[]>} The posts.
    */
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(30)
   @Get('all/:id')
   getSavedPosts(@Param('id') id: string): Promise<PostDto[]> {
     return this.savedPostService.getSavedPostsService(id);
@@ -30,6 +34,8 @@ export class SavedPostController {
    * @param {number} id - The ID of the post to retrieve.
    * @return {any} The retrieved post.
    */
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(30)
   @Get(':id')
   getSavedPost(@Param('id') id: string): Promise<PostDto> {
     return this.savedPostService.getSavedPostService(id);
