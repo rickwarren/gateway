@@ -3,6 +3,7 @@ import { FriendListService } from './friend-list.service';
 import { FriendListDto } from './dto/friend-list.dto';
 import { CreateFriendListDto } from './dto/create-friend-list.dto';
 import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
+import { CreateFriendListResponseDto, DeleteFriendListResponseDto, UserIds } from '../../../friend-rpc/src/protos/friend-list.pb';
 
 @Controller('friend-list')
 export class FriendListController {
@@ -36,21 +37,13 @@ export class FriendListController {
     return this.friendListService.getFriendsByUserIdService(userId);
   }
 
-  /**
-   * Checks if two users are friends.
-   *
-   * @param {string} id - The ID of the first user.
-   * @param {string} userId - The ID of the second user.
-   * @return {Promise<boolean>} A promise that resolves to a boolean indicating whether the two users are friends.
-   * */
   @UseInterceptors(CacheInterceptor)
   @CacheTTL(30)
-  @Get(':id/:userId')
-  areUsersFriends(
-    @Param('id') id: string,
+  @Get('friends/:userId')
+  getFriendsOfFriendsByUserId(
     @Param('userId') userId: string,
-  ): Promise<boolean> {
-    return this.friendListService.areUsersFriendsService(id, userId);
+  ): Promise<FriendListDto[]> {
+    return this.friendListService.getFriendsOfFriendsByUserIdService(userId);
   }
 
   /**
@@ -60,7 +53,7 @@ export class FriendListController {
    * @return {Promise<FriendListDto>} A promise that resolves to the friend list after the friend has been added.
    * */
   @Post()
-  addFriend(@Body() data: CreateFriendListDto): Promise<FriendListDto> {
+  addFriend(@Body() data: CreateFriendListDto): Promise<CreateFriendListResponseDto> {
     return this.friendListService.addFriendService(data);
   }
 
@@ -71,7 +64,7 @@ export class FriendListController {
    * @return {Promise<boolean>} A promise that resolves to true if the friend is successfully removed, false otherwise.
    * */
   @Delete('remove/:id')
-  removeFriend(@Param('id') id: string): Promise<boolean> {
-    return this.friendListService.removeFriendService(id);
+  removeFriend(@Param('id') ids: UserIds): Promise<DeleteFriendListResponseDto> {
+    return this.friendListService.removeFriendService(ids);
   }
 }

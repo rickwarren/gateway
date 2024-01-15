@@ -14,10 +14,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { PostService } from './post.service';
-import { CreatePostDto } from './dto/create-post.dto';
-import { UpdatePostDto } from './dto/update-post.dto';
-import { PostDto } from './dto/post.dto';
-import { DeletePostResponseDto, Post as Posts } from '../../../post-rpc/src/protos/post.pb';
+import { CreatePostDto, DeletePostResponseDto, PostDto, UpdatePostDto } from '../../../post-rpc/src/protos/post.pb';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 
@@ -33,7 +30,7 @@ export class PostController {
   @UseInterceptors(CacheInterceptor)
   @CacheTTL(30)
   @Get('all/:id')
-  getPosts(@Param('id') id: string): Promise<Posts[]> {
+  getPosts(@Param('id') id: string): Promise<PostDto[]> {
     return this.postService.getPostsService(id);
   }
 
@@ -46,7 +43,7 @@ export class PostController {
   @UseInterceptors(CacheInterceptor)
   @CacheTTL(30)
   @Get(':id')
-  getPost(@Param('id') id: string): Promise<Posts> {
+  getPost(@Param('id') id: string): Promise<PostDto> {
     return this.postService.getPostService(id);
   }
 

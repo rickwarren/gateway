@@ -17,6 +17,7 @@ import { UserCorporationModule } from './user-corporation/user-corporation.modul
 import { CacheModule, CacheInterceptor } from '@nestjs/cache-manager';
 import * as redisStore from 'cache-manager-redis-store';
 import { APP_INTERCEPTOR } from '@nestjs/core';
+import { NotificationModule } from './notification/notification.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
     CorporationModule,
     UserCorporationModule,
     CacheModule.register({ isGlobal: true }),
+    NotificationModule,
   ],
   providers: [
     {
