@@ -6,10 +6,9 @@ import {
   deleteComment,
   getComments,
   updateComment,
-  Comment,
+  CommentDto,
   getCommentsForPost,
 } from '../../../post-rpc/src/protos/comment.pb';
-import { CommentDto } from './dto/comment.dto';
 import { HttpService } from '@nestjs/axios';
 
 @Injectable()
@@ -21,7 +20,7 @@ export class CommentService {
    *
    * @return {Promise<any>} A promise that resolves to an array of comments.
    */
-  async getCommentsService(): Promise<Comment[]> {
+  async getCommentsService(): Promise<CommentDto[]> {
     const comments = await getComments(
       {},
       { baseURL: 'http://localhost:8081' },
@@ -46,7 +45,7 @@ export class CommentService {
        * The method makes a request to the server to retrieve the comments for the specified post.
        * The returned comments are then logged to the console.
        */
-  async getCommentsForPostService(postId: string): Promise<Comment[]> {
+  async getCommentsForPostService(postId: string): Promise<CommentDto[]> {
       const comments = await getCommentsForPost(
           { id: postId },
           { baseURL: 'http://localhost:8081' },

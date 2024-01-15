@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import {
   CreatePostDto,
   DeletePostResponseDto,
-  Post,
+  PostDto,
   UpdatePostDto,
   createPost,
   deletePost,
@@ -10,7 +10,6 @@ import {
   getPosts,
   updatePost,
 } from '../../../post-rpc/src/protos/post.pb';
-import { PostDto } from './dto/post.dto';
 import { getCommentsForPost } from '../../../post-rpc/src/protos/comment.pb';
 import { HttpService } from '@nestjs/axios';
 import { Buffer } from 'buffer';
@@ -31,7 +30,7 @@ export class PostService {
    * @param {number} userId - The ID of the user for retrieving posts.
    * @return {Promise<PostDto[]>} A Promise that resolves to an array of PostDto objects representing the retrieved posts.
    */
-  async getPostsService(locationId: string): Promise<Post[]> {
+  async getPostsService(locationId: string): Promise<PostDto[]> {
     const posts = await getPosts({ id: locationId }, { baseURL: 'http://localhost:8081' });
     const results = await Promise.all(posts.posts.map(async (post) => {
       const comments = await getCommentsForPost({id: post.id}, { baseURL: 'http://localhost:8081' });
@@ -48,7 +47,7 @@ export class PostService {
    * @param {number} id - The ID of the post to retrieve.
    * @return {Promise<PostDto>} A Promise that resolves to a PostDto object representing the retrieved post.
    */
-  async getPostService(postId: string): Promise<Post> {
+  async getPostService(postId: string): Promise<PostDto> {
     const pId: PostIdDto = {
       id: postId
     };

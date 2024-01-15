@@ -1,10 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import {
   CreateFriendListDto,
+  CreateFriendListResponseDto,
+  DeleteFriendListResponseDto,
   FriendListDto,
+  UserIds,
   addFriend,
-  areUsersFriends,
   getFriendsByUserId,
+  getFriendsOfFriendsByUserId,
   removeFriend,
 } from '../../../friend-rpc/src/protos/friend-list.pb';
 
@@ -26,19 +29,12 @@ export class FriendListService {
     return friends.friends;
   }
 
-  /**
-   * Checks if two users are friends.
-   *
-   * @param {string} id - The ID of the first user.
-   * @param {string} userId - The ID of the second user.
-   * @return {Promise<boolean>} A promise that resolves to a boolean indicating whether the two users are friends.
-   * */
-  async areUsersFriendsService(id: string, userId: string): Promise<boolean> {
-    const result = await areUsersFriends(
-      { id: id, userId: userId },
+  async getFriendsOfFriendsByUserIdService(userId: string): Promise<FriendListDto[]> {
+    const friends = await getFriendsOfFriendsByUserId(
+      { id: userId },
       { baseURL: 'http://localhost:8082' },
     );
-    return result.success;
+    return friends.friends;
   }
 
   /**
@@ -47,7 +43,7 @@ export class FriendListService {
    * @param {CreateFriendListDto} data - The data required to create a friend list.
    * @return {Promise<FriendListDto>} A promise that resolves to the friend list after the friend has been added.
    * */
-  async addFriendService(data: CreateFriendListDto): Promise<FriendListDto> {
+  async addFriendService(data: CreateFriendListDto): Promise<CreateFriendListResponseDto> {
     return await addFriend(data, { baseURL: 'http://localhost:8082' });
 
   }
@@ -58,11 +54,10 @@ export class FriendListService {
    * @param {string} id - The ID of the friend to be removed.
    * @return {Promise<boolean>} A promise that resolves to true if the friend is successfully removed, false otherwise.
    * */
-  async removeFriendService(id: string): Promise<boolean> {
-    const result = await removeFriend(
-      { id: id },
+  async removeFriendService(ids: UserIds): Promise<DeleteFriendListResponseDto> {
+    return await removeFriend(
+      { id: ids.id, id2: ids.id2 },
       { baseURL: 'http://localhost:8082' },
     );
-    return result.success;
   }
 }

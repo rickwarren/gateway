@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import {
-  Post,
+  PostDto,
   getPost,
 } from '../../../post-rpc/src/protos/post.pb';
 
@@ -17,7 +17,7 @@ export class SavedPostService {
    * @param {number} userId - The ID of the user for retrieving posts.
    * @return {Promise<PostDto[]>} A Promise that resolves to an array of PostDto objects representing the retrieved posts.
    */
-  async getSavedPostsService(userId: string): Promise<Post[]> {
+  async getSavedPostsService(userId: string): Promise<PostDto[]> {
     const savedPosts = [];
     const posts = await getSavedPosts({ id: userId }, { baseURL: 'http://localhost:8081' });
     const results = await Promise.all(posts.savedPosts.map(async (post) => {
@@ -34,7 +34,7 @@ export class SavedPostService {
    * @param {number} id - The ID of the post to retrieve.
    * @return {Promise<PostDto>} A Promise that resolves to a PostDto object representing the retrieved post.
    */
-  async getSavedPostService(id: string): Promise<Post> {
+  async getSavedPostService(id: string): Promise<PostDto> {
     const savedPost = await getSavedPost({id: id} , { baseURL: 'http://localhost:8081' });
     const post = await getPost({id: savedPost.id} , { baseURL: 'http://localhost:8081' });
     return post;
