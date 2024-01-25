@@ -5,12 +5,14 @@ import {
   Get,
   Param,
   Post,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { SavedPostService } from './saved-post.service';
 import { PostDto } from './dto/post.dto';
 import { CreateSavedPostDto, DeleteSavedPostResponseDto, SavedPostDto } from '../../../post-rpc/src/protos/saved-post.pb';
 import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
+import { AuthGuard } from '../auth/auth.guard';
 
 @Controller('post')
 export class SavedPostController {
@@ -23,6 +25,7 @@ export class SavedPostController {
    */
   @UseInterceptors(CacheInterceptor)
   @CacheTTL(30)
+  @UseGuards(AuthGuard)
   @Get('all/:id')
   getSavedPosts(@Param('id') id: string): Promise<PostDto[]> {
     return this.savedPostService.getSavedPostsService(id);
@@ -36,6 +39,7 @@ export class SavedPostController {
    */
   @UseInterceptors(CacheInterceptor)
   @CacheTTL(30)
+  @UseGuards(AuthGuard)
   @Get(':id')
   getSavedPost(@Param('id') id: string): Promise<PostDto> {
     return this.savedPostService.getSavedPostService(id);
@@ -47,6 +51,7 @@ export class SavedPostController {
    * @param {CreatePostDto} data - The data for creating the post.
    * @return {any} The created post.
    */
+  @UseGuards(AuthGuard)
   @Post()
   createSavedPost(@Body() data: CreateSavedPostDto): Promise<SavedPostDto> {
     return this.savedPostService.createSavedPostService(data);
@@ -58,6 +63,7 @@ export class SavedPostController {
    * @param {number} id - The ID of the post to delete.
    * @return {void} - Returns nothing.
    */
+  @UseGuards(AuthGuard)
   @Delete()
   deleteSavedPost(@Param() id: string): Promise<DeleteSavedPostResponseDto> {
     return this.savedPostService.deleteSavedPostService(id);

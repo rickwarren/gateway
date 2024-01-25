@@ -1,4 +1,4 @@
-import { Controller, Delete, Get, Param, Post, StreamableFile, UploadedFile, UseInterceptors, Response } from '@nestjs/common';
+import { Controller, Delete, Get, Param, Post, StreamableFile, UploadedFile, UseInterceptors, Response, UseGuards } from '@nestjs/common';
 import { LocalFileService } from './local-file.service';
 import { DeleteLocalFileResponseDto } from './dto/deleteLocalFileResponse.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -7,6 +7,7 @@ import { createReadStream } from 'fs';
 import { join } from 'path';
 import { Response as Res } from 'express';
 import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
+import { AuthGuard } from '../auth/auth.guard';
 
 @Controller('upload')
 export class LocalFileController {

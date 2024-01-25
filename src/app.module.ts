@@ -18,6 +18,9 @@ import { CacheModule, CacheInterceptor } from '@nestjs/cache-manager';
 import * as redisStore from 'cache-manager-redis-store';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { NotificationModule } from './notification/notification.module';
+import { SearchModule } from './search/search.module';
+import { CharityOwnerModule } from './charity-owner/charity-owner.module';
+import { CorporationOwnerModule } from './corporation-owner/corporation-owner.module';
 
 @Module({
   imports: [
@@ -38,6 +41,9 @@ import { NotificationModule } from './notification/notification.module';
     UserCorporationModule,
     CacheModule.register({ isGlobal: true }),
     NotificationModule,
+    SearchModule,
+    CharityOwnerModule,
+    CorporationOwnerModule,
   ],
   providers: [
     {

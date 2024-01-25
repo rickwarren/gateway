@@ -7,7 +7,7 @@ export class CorporationService {
     async getCorporationsService(): Promise<CorporationDto[]> {
         const response = await getCorporations(
             {},
-            { baseURL: 'http://localhost:8080' },
+            { baseURL: 'http://localhost:8082' },
         );
         return response.corporations;
     }
@@ -15,28 +15,28 @@ export class CorporationService {
     async getCorporationService(id: string): Promise<CorporationDto> {
         return await getCorporation(
             { id: id },
-            { baseURL: 'http://localhost:8080' },
+            { baseURL: 'http://localhost:8082' },
         );
     }
 
     async createCorporationService(data: CreateCorporationDto): Promise<CorporationDto> {
         return await createCorporation(
             data,
-            { baseURL: 'http://localhost:8080' },
+            { baseURL: 'http://localhost:8082' },
         );
     }
 
     async updateCorporationService(data: UpdateCorporationDto): Promise<CorporationDto> {
         return await updateCorporation(
             data,
-            { baseURL: 'http://localhost:8080' },
+            { baseURL: 'http://localhost:8082' },
         );
     }
 
     async deleteCorporationService(id: string): Promise<DeleteCorporationResponseDto> {
         return await deleteCorporation(
             { id: id },
-            { baseURL: 'http://localhost:8080' },
+            { baseURL: 'http://localhost:8082' },
         );
     }
 }
