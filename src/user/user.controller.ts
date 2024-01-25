@@ -28,7 +28,7 @@ export class UserController {
   @UseGuards(AuthGuard)
   @Get('current')
   getCurrentUser(@Req() req: any): Promise<UserDto> {
-    return this.userService.getUserService(req.user.id);
+    return this.userService.getUserService({ id: req.user.id });
   }
 
   /**
@@ -81,6 +81,7 @@ export class UserController {
    * @return {Promise<UserDto>} A promise that resolves to the user data.
    */
   
+    @UseGuards(AuthGuard)
     @Post('auth')
     userAuth(@Body() data: any): Promise<any> {
       return this.userService.userAuthService(data);
@@ -92,7 +93,6 @@ export class UserController {
    * @param {CreateUserDto} data - The data for creating a new user.
    * @return {Promise<UserDto>} The created user.
    */
-  @UseGuards(AuthGuard)
   @Post('register')
   createUser(@Body() data: CreateUserDto): Promise<UserDto> {
     return this.userService.createUserService(data);

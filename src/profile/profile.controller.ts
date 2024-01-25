@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Put,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { ProfileService } from './profile.service';
@@ -14,6 +15,7 @@ import { DeleteProfileResponseDto } from './dto/deleteProfileResponse.dto';
 import { ProfileDto } from './dto/profile.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
+import { AuthGuard } from '../auth/auth.guard';
 
 
 @Controller('profile')
@@ -39,6 +41,7 @@ export class ProfileController {
    */
   @UseInterceptors(CacheInterceptor)
   @CacheTTL(30)
+  @UseGuards(AuthGuard)
   @Get(':userId')
   getProfile(@Param('userId') userId: string): Promise<ProfileDto> {
     return this.profileService.getProfileService(userId);
@@ -52,6 +55,7 @@ export class ProfileController {
    */
   @UseInterceptors(CacheInterceptor)
   @CacheTTL(30)
+  @UseGuards(AuthGuard)
   @Get('all')
   getProfiles(): Promise<ProfileDto[]> {
     return this.profileService.getProfilesService();
@@ -63,6 +67,7 @@ export class ProfileController {
    * @param {CreateProfileDto} data - The data used to create the profile.
    * @return {any} The created profile.
    */
+  @UseGuards(AuthGuard)
   @Post()
   createProfile(@Body() data: CreateProfileDto): Promise<ProfileDto> {
     return this.profileService.createProfileService(data);
@@ -74,6 +79,7 @@ export class ProfileController {
    * @param {UpdateProfileDto} data - The data used to update the profile.
    * @return {Promise<ProfileDto>} The updated profile.
    */
+  @UseGuards(AuthGuard)
   @Put()
   updateProfile(@Body() data: UpdateProfileDto): Promise<ProfileDto> {
     return this.profileService.updateProfileService(data);
@@ -85,6 +91,7 @@ export class ProfileController {
    * @param {number} id - The ID of the profile to be deleted.
    * @return {Promise<boolean>} A promise that resolves to true if the profile is successfully deleted, or false otherwise.
    */
+  @UseGuards(AuthGuard)
   @Delete(':id')
   deleteProfile(@Param('id') id: string): Promise<DeleteProfileResponseDto> {
     return this.profileService.deleteProfileService(id);

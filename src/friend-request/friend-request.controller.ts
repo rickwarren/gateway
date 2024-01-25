@@ -7,6 +7,7 @@ import {
   Post,
   Put,
   Req,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { FriendRequestService } from './friend-request.service';
@@ -14,6 +15,7 @@ import { FriendRequestDto } from './dto/friend-request.dto';
 import { CreateFriendRequestDto } from './dto/create-friend-request.dto';
 import { UpdateFriendRequestDto } from './dto/update-friend-request.dto';
 import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
+import { AuthGuard } from '../auth/auth.guard';
 
 @Controller('friend-request')
 export class FriendRequestController {
@@ -25,6 +27,7 @@ export class FriendRequestController {
    * @param {@Req()} req - The request object.
    * @returns {Promise<FriendRequestDto[]>} A promise that resolves to an array of friend request DTOs.
    */
+  @UseGuards(AuthGuard)
   @UseInterceptors(CacheInterceptor)
   @CacheTTL(30)
   @Get()
@@ -40,6 +43,9 @@ export class FriendRequestController {
    * @param {number} userId - The ID of the user to retrieve friend requests for.
    * @return {Promise<FriendRequestDto[]>} A promise that resolves to an array of FriendRequestDto objects representing the friend requests.
    */
+  @UseGuards(AuthGuard)
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(30)
   @Get(':userId')
   getFriendRequestsByUserId(
     @Param('userId') userId: string,
@@ -53,6 +59,7 @@ export class FriendRequestController {
    * @param {CreateFriendRequestDto} data - The data for creating the friend request.
    * @return {Promise<FriendRequestDto>} A promise that resolves to the created friend request.
    * */
+  @UseGuards(AuthGuard)
   @Post()
   createFriendRequest(
     @Body() data: CreateFriendRequestDto,
@@ -66,6 +73,7 @@ export class FriendRequestController {
    * @param {UpdateFriendRequestDto} data - The data needed to update the friend request.
    * @return {Promise<FriendRequestDto>} A promise that resolves to the updated friend request.
    * */
+  @UseGuards(AuthGuard)
   @Put()
   updateFriendRequest(
     @Body() data: UpdateFriendRequestDto,
@@ -79,6 +87,7 @@ export class FriendRequestController {
    * @param {number} id - The ID of the friend request to be deleted.
    * @return {Promise<boolean>} - A promise that resolves to a boolean indicating whether the friend request was successfully deleted.
    * */
+  @UseGuards(AuthGuard)
   @Delete(':id')
   deleteFriendRequest(@Param('id') id: string): Promise<boolean> {
     return this.friendRequestService.deleteFriendRequestService(id);
@@ -90,6 +99,7 @@ export class FriendRequestController {
    * @param {number} id - The ID of the friend request to accept.
    * @return {Promise<boolean>} A promise that resolves to true if the friend request was accepted successfully, or false otherwise.
    * */
+  @UseGuards(AuthGuard)
   @Get(':id/accept')
   acceptFriendRequest(@Param('id') id: string): Promise<boolean> {
     return this.friendRequestService.acceptFriendRequestService(id);
@@ -101,6 +111,7 @@ export class FriendRequestController {
    * @param {number} id - The ID of the friend request to reject.
    * @return {Promise<boolean>} A promise that resolves to true if the friend request was successfully rejected, or false otherwise.
    * */
+  @UseGuards(AuthGuard)
   @Get(':id/reject')
   rejectFriendRequest(@Param('id') id: string): Promise<boolean> {
     return this.friendRequestService.rejectFriendRequestService(id);
@@ -113,6 +124,7 @@ export class FriendRequestController {
    * @param {number} addresseId - The ID of the addressee.
    * @return {Promise<FriendRequestDto>} A promise that resolves to the friend request DTO.
    */
+  @UseGuards(AuthGuard)
   @Get('relation')
   getFriendRequest(
     @Param() requesterId: string,

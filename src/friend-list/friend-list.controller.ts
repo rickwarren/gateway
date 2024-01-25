@@ -1,9 +1,10 @@
-import { Body, Controller, Delete, Get, Param, Post, Req, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Req, UseGuards, UseInterceptors } from '@nestjs/common';
 import { FriendListService } from './friend-list.service';
 import { FriendListDto } from './dto/friend-list.dto';
 import { CreateFriendListDto } from './dto/create-friend-list.dto';
 import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 import { CreateFriendListResponseDto, DeleteFriendListResponseDto, UserIds } from '../../../friend-rpc/src/protos/friend-list.pb';
+import { AuthGuard } from '../auth/auth.guard';
 
 @Controller('friend-list')
 export class FriendListController {
@@ -17,6 +18,7 @@ export class FriendListController {
    */
   @UseInterceptors(CacheInterceptor)
   @CacheTTL(30)
+  @UseGuards(AuthGuard)
   @Get()
   getFriends(@Req() req: any): Promise<FriendListDto[]> {
     return this.friendListService.getFriendsByUserIdService(req.user.user.id);
@@ -30,6 +32,7 @@ export class FriendListController {
    */
   @UseInterceptors(CacheInterceptor)
   @CacheTTL(30)
+  @UseGuards(AuthGuard)
   @Get(':userId')
   getFriendsByUserId(
     @Param('userId') userId: string,
@@ -39,6 +42,7 @@ export class FriendListController {
 
   @UseInterceptors(CacheInterceptor)
   @CacheTTL(30)
+  @UseGuards(AuthGuard)
   @Get('friends/:userId')
   getFriendsOfFriendsByUserId(
     @Param('userId') userId: string,
@@ -52,6 +56,7 @@ export class FriendListController {
    * @param {CreateFriendListDto} data - The data required to create a friend list.
    * @return {Promise<FriendListDto>} A promise that resolves to the friend list after the friend has been added.
    * */
+  @UseGuards(AuthGuard)
   @Post()
   addFriend(@Body() data: CreateFriendListDto): Promise<CreateFriendListResponseDto> {
     return this.friendListService.addFriendService(data);
@@ -63,6 +68,7 @@ export class FriendListController {
    * @param {string} id - The ID of the friend to be removed.
    * @return {Promise<boolean>} A promise that resolves to true if the friend is successfully removed, false otherwise.
    * */
+  @UseGuards(AuthGuard)
   @Delete('remove/:id')
   removeFriend(@Param('id') ids: UserIds): Promise<DeleteFriendListResponseDto> {
     return this.friendListService.removeFriendService(ids);

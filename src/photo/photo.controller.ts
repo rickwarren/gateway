@@ -1,7 +1,8 @@
-import { Body, Controller, Delete, Get, Param, Post, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, UseGuards, UseInterceptors } from '@nestjs/common';
 import { PhotoService } from './photo.service';
 import { CreatePhotoDto } from './dto/create-photo.dto';
 import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
+import { AuthGuard } from '../auth/auth.guard';
 
 @Controller('photo')
 export class PhotoController {
@@ -30,5 +31,4 @@ export class PhotoController {
     async deletePhoto(@Param('id') id: string) {
         return await this.photoService.deletePhotoService(id);
     }
-
 }
